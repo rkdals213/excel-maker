@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:13306/subway?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: masterpw
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hivernate.type: trace
+#    org.springframework.transaction.interceptor: trace
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
