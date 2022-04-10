@@ -19,7 +19,10 @@ public class ExcelService<T> {
             return workbook;
         }
 
-        Field[] declaredFields = getDeclaredFields(datas.get(0).getClass().getSimpleName());
+        String simpleName = datas.get(0)
+                .getClass()
+                .getSimpleName();
+        Field[] declaredFields = getDeclaredFields(simpleName);
 
         renderHeader(workbook, sheet, declaredFields);
         renderBody(workbook, sheet, datas, declaredFields);
