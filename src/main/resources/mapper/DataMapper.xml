@@ -32,4 +32,13 @@
         group by p.exercise
         order by null
     </select>
+    <select id="selectDeveloperInfo" resultType="com.example.excelmaker.excelform.DeveloperInfo">
+        select c.id, h.name, p.hobby, p.dev_type, p.years_coding
+        from programmer p,
+             covid c,
+             hospital h
+        where p.id = c.programmer_id
+          and h.id = c.hospital_id
+          and ((student like 'Yes%' and hobby = 'Yes') or (years_coding = '0-2 years'))
+    </select>
 </mapper>

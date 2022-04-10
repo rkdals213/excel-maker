@@ -1,5 +1,6 @@
 package com.example.excelmaker.dataservice;
 
+import com.example.excelmaker.excelform.DeveloperInfo;
 import com.example.excelmaker.excelform.ExerciseCount;
 import com.example.excelmaker.excelform.StayCount;
 import org.apache.ibatis.annotations.Mapper;
@@ -12,4 +13,6 @@ public interface DataMapper {
     List<StayCount> selectStayCount();
 
     List<ExerciseCount> selectExerciseCount();
+
+    List<DeveloperInfo> selectDeveloperInfo();
 }

@@ -1,5 +1,6 @@
 package com.example.excelmaker.dataservice;
 
+import com.example.excelmaker.excelform.DeveloperInfo;
 import com.example.excelmaker.excelform.ExerciseCount;
 import com.example.excelmaker.excelservice.ExcelService;
 import com.example.excelmaker.excelform.StayCount;
@@ -23,6 +24,7 @@ public class DataService {
     public void createStayCountExcel() throws Exception {
         List<StayCount> stayCounts = dataMapper.selectStayCount();
         List<ExerciseCount> exerciseCounts = dataMapper.selectExerciseCount();
+        List<DeveloperInfo> developerInfos = dataMapper.selectDeveloperInfo();
 
         XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -31,6 +33,9 @@ public class DataService {
 
         ExcelService<ExerciseCount> exerciseCountExcelService = new ExcelService<>();
         exerciseCountExcelService.createExcel(workbook, exerciseCounts, "exerciseCounts");
+
+        ExcelService<DeveloperInfo> developerInfoExcelService = new ExcelService<>();
+        developerInfoExcelService.createExcel(workbook, developerInfos, "developerInfos");
 
         String fileName = PATH + "countData" + EXTENSION;
 
@@ -45,6 +50,4 @@ public class DataService {
         excel.close();
         fos.close();
     }
-
-
 }
