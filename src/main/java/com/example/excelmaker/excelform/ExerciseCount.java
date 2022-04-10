@@ -1,4 +1,4 @@
-package com.example.excelmaker;
+package com.example.excelmaker.excelform;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @ToString
-public class StayCount {
-    private String stay;
+public class ExerciseCount {
+    private String exercise;
     private int count;
 }

@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.excelmaker.DataMapper">
-    <select id="selectStayCount" resultType="com.example.excelmaker.StayCount">
+<mapper namespace="com.example.excelmaker.dataservice.DataMapper">
+    <select id="selectStayCount" resultType="com.example.excelmaker.excelform.StayCount">
         select c.stay as stay, count(c.stay) as count
         from programmer p,
              covid c,
@@ -16,6 +16,20 @@
           and h.name = '서울대병원'
           and m.age in (20, 21, 22, 23, 24, 25, 26, 27, 28, 29)
         group by c.stay
+        order by null
+    </select>
+    <select id="selectExerciseCount" resultType="com.example.excelmaker.excelform.ExerciseCount">
+        select p.exercise, count(p.exercise) as count
+        from programmer p,
+             covid c,
+             hospital h,
+             member m
+        where p.id = c.programmer_id
+          and h.id = c.hospital_id
+          and m.id = p.member_id
+          and h.name = '서울대병원'
+          and m.age in (30, 31, 32, 33, 34, 35, 36, 37, 38, 39)
+        group by p.exercise
         order by null
     </select>
 </mapper>
