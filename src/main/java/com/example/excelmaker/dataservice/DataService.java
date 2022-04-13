@@ -2,7 +2,7 @@ package com.example.excelmaker.dataservice;
 
 import com.example.excelmaker.excelform.DeveloperInfo;
 import com.example.excelmaker.excelform.ExerciseCount;
-import com.example.excelmaker.excelservice.ExcelService;
+import com.example.excelmaker.excelservice.Excel;
 import com.example.excelmaker.excelform.StayCount;
 import lombok.AllArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -28,18 +28,18 @@ public class DataService {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
 
-        ExcelService<StayCount> stayCountExcelService = new ExcelService<>();
-        XSSFWorkbook excel = stayCountExcelService.createExcel(workbook, stayCounts, "stayCounts");
+        Excel.of(workbook, stayCounts, "stayCounts")
+                .generateSheet();
 
-        ExcelService<ExerciseCount> exerciseCountExcelService = new ExcelService<>();
-        exerciseCountExcelService.createExcel(workbook, exerciseCounts, "exerciseCounts");
+        Excel.of(workbook, exerciseCounts, "exerciseCounts")
+                .generateSheet();
 
-        ExcelService<DeveloperInfo> developerInfoExcelService = new ExcelService<>();
-        developerInfoExcelService.createExcel(workbook, developerInfos, "developerInfos");
+        Excel.of(workbook, developerInfos, "developerInfos")
+                .generateSheet();
 
         String fileName = PATH + "countData" + EXTENSION;
 
-        saveFile(excel, fileName);
+        saveFile(workbook, fileName);
     }
 
     private void saveFile(XSSFWorkbook excel, String fileName) throws IOException {

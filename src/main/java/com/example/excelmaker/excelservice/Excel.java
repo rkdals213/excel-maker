@@ -6,53 +6,80 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class ExcelService<T> {
+public class Excel<T> {
 
     private static final String EXCEL_CLASS_PATH = "com.example.excelmaker.excelform.";
     private static final String HEADER = "header";
     private static final String DATA = "data";
 
-    public XSSFWorkbook createExcel(XSSFWorkbook workbook, List<T> datas, String sheetName) {
-        Sheet sheet = workbook.createSheet(sheetName);
+    private final XSSFWorkbook workbook;
+    private final List<T> datas;
+    private final Field[] fields;
+    private final String sheetName;
 
+    private Excel(XSSFWorkbook workbook, Field[] fields, List<T> datas, String sheetName) {
+        this.workbook = workbook;
+        this.datas = datas;
+        this.fields = fields;
+        this.sheetName = sheetName;
+    }
+
+    public static <T> Excel<T> of(XSSFWorkbook workbook, List<T> datas, String sheetName) {
+        return new Excel<>(workbook, initDeclaredField(datas), datas, sheetName);
+    }
+
+    private static <T> Field[] initDeclaredField(List<T> datas) {
         if (datas.isEmpty()) {
-            return workbook;
+            return new Field[0];
         }
 
         String simpleName = datas.get(0)
                 .getClass()
                 .getSimpleName();
-        Field[] declaredFields = getDeclaredFields(simpleName);
 
-        renderHeader(workbook, sheet, declaredFields);
-        renderBody(workbook, sheet, datas, declaredFields);
-        adjustColumnSize(sheet, declaredFields);
-
-        return workbook;
+        return getDeclaredFields(simpleName);
     }
 
-    private void renderHeader(XSSFWorkbook workbook, Sheet sheet, Field[] declaredFields) {
-        CellStyle headerStyle = CellStyleSetting(workbook, HEADER);
-        renderRow(sheet.createRow(0), declaredFields, headerStyle);
+    private static Field[] getDeclaredFields(String className) {
+        try {
+            Class<?> excelFormClass = Class.forName(EXCEL_CLASS_PATH + className);
+            return excelFormClass.getDeclaredFields();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 
-    private void renderBody(XSSFWorkbook workbook, Sheet sheet, List<T> datas, Field[] declaredFields) {
-        CellStyle dataStyle = CellStyleSetting(workbook, DATA);
+    public void generateSheet() {
+        Sheet sheet = workbook.createSheet(sheetName);
+
+        renderHeader(sheet);
+        renderBody(sheet);
+        adjustColumnSize(sheet);
+    }
+
+    private void renderHeader(Sheet sheet) {
+        CellStyle headerStyle = CellStyleSetting(HEADER);
+        renderHeaderRow(sheet.createRow(0), headerStyle);
+    }
+
+    private void renderHeaderRow(Row row, CellStyle headerStyle) {
+        for (int i = 0; i < fields.length; i++) {
+            renderCell(fields[i].getName(), headerStyle, row.createCell(i));
+        }
+    }
+
+    private void renderBody(Sheet sheet) {
+        CellStyle dataStyle = CellStyleSetting(DATA);
 
         for (int i = 0; i < datas.size(); i++) {
-            renderRow(sheet.createRow(i + 1), datas.get(i), declaredFields, dataStyle);
+            renderBodyRow(sheet.createRow(i + 1), datas.get(i), dataStyle);
         }
     }
 
-    private void renderRow(Row row, Field[] declaredFields, CellStyle headerStyle) {
-        for (int i = 0; i < declaredFields.length; i++) {
-            renderCell(declaredFields[i].getName(), headerStyle, row.createCell(i));
-        }
-    }
-
-    private void renderRow(Row row, T data, Field[] declaredFields, CellStyle dataStyle) {
-        for (int i = 0; i < declaredFields.length; i++) {
-            Field declaredField = declaredFields[i];
+    private void renderBodyRow(Row row, T data, CellStyle dataStyle) {
+        for (int i = 0; i < fields.length; i++) {
+            Field declaredField = fields[i];
             declaredField.setAccessible(true);
 
             Object value = getValue(data, declaredField);
@@ -65,8 +92,8 @@ public class ExcelService<T> {
         cell.setCellStyle(dataStyle);
     }
 
-    private void adjustColumnSize(Sheet sheet, Field[] declaredFields) {
-        for (int i = 0; i < declaredFields.length; i++) {
+    private void adjustColumnSize(Sheet sheet) {
+        for (int i = 0; i < fields.length; i++) {
             sheet.autoSizeColumn(i);
             sheet.setColumnWidth(i, sheet.getColumnWidth(i));
         }
@@ -81,17 +108,7 @@ public class ExcelService<T> {
         }
     }
 
-    private Field[] getDeclaredFields(String className) {
-        try {
-            Class<?> excelFormClass = Class.forName(EXCEL_CLASS_PATH + className);
-            return excelFormClass.getDeclaredFields();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
-    }
-
-    private CellStyle CellStyleSetting(XSSFWorkbook workbook, String type) {
+    private CellStyle CellStyleSetting(String type) {
         //테이블 스타일
         CellStyle cellStyle = workbook.createCellStyle();
 
