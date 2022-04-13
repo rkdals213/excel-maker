@@ -33,36 +33,36 @@ public class ExcelService<T> {
 
     private void renderHeader(XSSFWorkbook workbook, Sheet sheet, Field[] declaredFields) {
         CellStyle headerStyle = CellStyleSetting(workbook, HEADER);
-
-        Row row = sheet.createRow(0);
-
-        for (int i = 0; i < declaredFields.length; i++) {
-            Cell cell = row.createCell(i);
-            cell.setCellValue(declaredFields[i].getName());
-            cell.setCellStyle(headerStyle);
-        }
+        renderRow(sheet.createRow(0), declaredFields, headerStyle);
     }
 
     private void renderBody(XSSFWorkbook workbook, Sheet sheet, List<T> datas, Field[] declaredFields) {
         CellStyle dataStyle = CellStyleSetting(workbook, DATA);
 
         for (int i = 0; i < datas.size(); i++) {
-            renderBody(sheet, datas.get(i), declaredFields, dataStyle, i + 1);
+            renderRow(sheet.createRow(i + 1), datas.get(i), declaredFields, dataStyle);
         }
     }
 
-    private void renderBody(Sheet sheet, Object data, Field[] declaredFields, CellStyle dataStyle, int rowIndex) {
-        Row row = sheet.createRow(rowIndex);
+    private void renderRow(Row row, Field[] declaredFields, CellStyle headerStyle) {
+        for (int i = 0; i < declaredFields.length; i++) {
+            renderCell(declaredFields[i].getName(), headerStyle, row.createCell(i));
+        }
+    }
 
+    private void renderRow(Row row, T data, Field[] declaredFields, CellStyle dataStyle) {
         for (int i = 0; i < declaredFields.length; i++) {
             Field declaredField = declaredFields[i];
             declaredField.setAccessible(true);
 
             Object value = getValue(data, declaredField);
-            Cell cell = row.createCell(i);
-            cell.setCellValue(value.toString());
-            cell.setCellStyle(dataStyle);
+            renderCell(value.toString(), dataStyle, row.createCell(i));
         }
+    }
+
+    private void renderCell(String data, CellStyle dataStyle, Cell cell) {
+        cell.setCellValue(data);
+        cell.setCellStyle(dataStyle);
     }
 
     private void adjustColumnSize(Sheet sheet, Field[] declaredFields) {
@@ -72,7 +72,7 @@ public class ExcelService<T> {
         }
     }
 
-    private Object getValue(Object data, Field declaredField) {
+    private Object getValue(T data, Field declaredField) {
         try {
             return declaredField.get(data);
         } catch (IllegalAccessException e) {
@@ -91,7 +91,7 @@ public class ExcelService<T> {
         }
     }
 
-    private CellStyle CellStyleSetting(XSSFWorkbook workbook, String kind) {
+    private CellStyle CellStyleSetting(XSSFWorkbook workbook, String type) {
         //테이블 스타일
         CellStyle cellStyle = workbook.createCellStyle();
 
@@ -101,7 +101,7 @@ public class ExcelService<T> {
         cellStyle.setBorderLeft(BorderStyle.THIN);
         cellStyle.setBorderRight(BorderStyle.THIN);
 
-        if (kind.equals(HEADER)) {
+        if (type.equals(HEADER)) {
             //배경색 회색
             cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
