@@ -21,7 +21,7 @@ public class DataService {
 
     private DataMapper dataMapper;
 
-    public void createStayCountExcel() throws Exception {
+    public void createExcel() throws Exception {
         List<StayCount> stayCounts = dataMapper.selectStayCount();
         List<ExerciseCount> exerciseCounts = dataMapper.selectExerciseCount();
         List<DeveloperInfo> developerInfos = dataMapper.selectDeveloperInfo();

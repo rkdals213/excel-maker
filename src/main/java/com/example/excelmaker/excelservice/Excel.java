@@ -59,18 +59,20 @@ public class Excel<T> {
     }
 
     private void renderHeader(Sheet sheet) {
-        CellStyle headerStyle = CellStyleSetting(HEADER);
+        CellStyle headerStyle = workbook.createCellStyle();
         renderHeaderRow(sheet.createRow(0), headerStyle);
     }
 
     private void renderHeaderRow(Row row, CellStyle headerStyle) {
         for (int i = 0; i < fields.length; i++) {
+            Style style = Style.of(workbook);
+            headerStyle = style.createHeaderStyle(headerStyle, fields[i]);
             renderCell(fields[i].getName(), headerStyle, row.createCell(i));
         }
     }
 
     private void renderBody(Sheet sheet) {
-        CellStyle dataStyle = CellStyleSetting(DATA);
+        CellStyle dataStyle = workbook.createCellStyle();
 
         for (int i = 0; i < datas.size(); i++) {
             renderBodyRow(sheet.createRow(i + 1), datas.get(i), dataStyle);
@@ -80,6 +82,7 @@ public class Excel<T> {
     private void renderBodyRow(Row row, T data, CellStyle dataStyle) {
         for (int i = 0; i < fields.length; i++) {
             Field declaredField = fields[i];
+            dataStyle = Style.of(workbook).createBodyStyle(dataStyle, declaredField);
             declaredField.setAccessible(true);
 
             Object value = getValue(data, declaredField);
@@ -106,33 +109,5 @@ public class Excel<T> {
             e.printStackTrace();
             throw new RuntimeException();
         }
-    }
-
-    private CellStyle CellStyleSetting(String type) {
-        //테이블 스타일
-        CellStyle cellStyle = workbook.createCellStyle();
-
-        //가는 경계선
-        cellStyle.setBorderTop(BorderStyle.THIN);
-        cellStyle.setBorderBottom(BorderStyle.THIN);
-        cellStyle.setBorderLeft(BorderStyle.THIN);
-        cellStyle.setBorderRight(BorderStyle.THIN);
-
-        if (type.equals(HEADER)) {
-            //배경색 회색
-            cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        }
-
-        //데이터는 가운데 정렬
-        cellStyle.setAlignment(HorizontalAlignment.CENTER);
-        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER); //중앙 정렬
-
-        //폰트 설정
-        Font fontOfGothic = workbook.createFont();
-        fontOfGothic.setFontName("맑은 고딕");
-        cellStyle.setFont(fontOfGothic);
-
-        return cellStyle;
     }
 }
