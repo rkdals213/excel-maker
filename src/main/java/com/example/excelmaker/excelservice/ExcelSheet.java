@@ -1,12 +1,15 @@
 package com.example.excelmaker.excelservice;
 
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class Excel<T> {
+public class ExcelSheet<T> {
 
     private static final String EXCEL_CLASS_PATH = "com.example.excelmaker.excelform.";
     private static final String HEADER = "header";
@@ -19,15 +22,15 @@ public class Excel<T> {
     private final ColumnStyles headerColumnStyles = new HeaderColumnStyles();
     private final ColumnStyles bodyColumnStyles = new BodyColumnStyles();
 
-    private Excel(XSSFWorkbook workbook, Field[] fields, List<T> datas, String sheetName) {
+    private ExcelSheet(XSSFWorkbook workbook, Field[] fields, List<T> datas, String sheetName) {
         this.workbook = workbook;
         this.datas = datas;
         this.fields = fields;
         this.sheetName = sheetName;
     }
 
-    public static <T> Excel<T> of(XSSFWorkbook workbook, List<T> datas, String sheetName) {
-        return new Excel<>(workbook, initDeclaredField(datas), datas, sheetName);
+    public static <T> ExcelSheet<T> of(XSSFWorkbook workbook, List<T> datas, String sheetName) {
+        return new ExcelSheet<>(workbook, initDeclaredField(datas), datas, sheetName);
     }
 
     private static <T> Field[] initDeclaredField(List<T> datas) {
@@ -52,29 +55,25 @@ public class Excel<T> {
         }
     }
 
-    public void generateSheet() {
+    public void generate() {
         Sheet sheet = workbook.createSheet(sheetName);
 
-        initHeaderStyle();
-        initBodyStyle();
+        initStyle();
         renderHeader(sheet);
         renderBody(sheet);
         adjustColumnSize(sheet);
     }
 
-    private void initHeaderStyle() {
+    private void initStyle() {
         for (Field field : fields) {
-            String fieldName = field.getName();
-            CellStyle headerStyle = Style.of(workbook).createHeaderStyle(workbook.createCellStyle(), field);
-            headerColumnStyles.addStyle(fieldName, headerStyle);
-        }
-    }
+            CellStyle headerStyle = Style.of(workbook)
+                    .createHeaderStyle(workbook.createCellStyle(), field);
 
-    private void initBodyStyle() {
-        for (Field field : fields) {
-            String fieldName = field.getName();
-            CellStyle bodyStyle = Style.of(workbook).createBodyStyle(workbook.createCellStyle(), field);
-            bodyColumnStyles.addStyle(fieldName, bodyStyle);
+            CellStyle bodyStyle = Style.of(workbook)
+                    .createBodyStyle(workbook.createCellStyle(), field);
+
+            headerColumnStyles.addStyle(field.getName(), headerStyle);
+            bodyColumnStyles.addStyle(field.getName(), bodyStyle);
         }
     }
 
@@ -84,8 +83,9 @@ public class Excel<T> {
 
     private void renderHeaderRow(Row row) {
         for (int i = 0; i < fields.length; i++) {
+            HeaderColumnName headerColumnName = fields[i].getDeclaredAnnotation(HeaderColumnName.class);
             String fieldName = fields[i].getName();
-            renderCell(fieldName, headerColumnStyles.getStyle(fieldName), row.createCell(i));
+            renderCell(headerColumnName.name(), headerColumnStyles.getStyle(fieldName), row.createCell(i));
         }
     }
 

@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 @SpringBootTest
-class ExcelMakerApplicationTests {
+class ExcelSheetMakerApplicationTests {
 
     @Autowired
     DataService dataService;
