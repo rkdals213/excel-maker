@@ -1,5 +1,9 @@
 package com.example.excelmaker.excelservice;
 
+import com.example.excelmaker.excelservice.style.BodyColumnStyles;
+import com.example.excelmaker.excelservice.style.ColumnStyles;
+import com.example.excelmaker.excelform.properties.HeaderColumnName;
+import com.example.excelmaker.excelservice.style.HeaderColumnStyles;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -66,10 +70,10 @@ public class ExcelSheet<T> {
 
     private void initStyle() {
         for (Field field : fields) {
-            CellStyle headerStyle = Style.of(workbook)
+            CellStyle headerStyle = new Style()
                     .createHeaderStyle(workbook.createCellStyle(), field);
 
-            CellStyle bodyStyle = Style.of(workbook)
+            CellStyle bodyStyle = new Style()
                     .createBodyStyle(workbook.createCellStyle(), field);
 
             headerColumnStyles.addStyle(field.getName(), headerStyle);

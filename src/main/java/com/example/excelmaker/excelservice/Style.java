@@ -1,23 +1,14 @@
 package com.example.excelmaker.excelservice;
 
+import com.example.excelmaker.excelform.properties.BodyStyle;
+import com.example.excelmaker.excelform.properties.HeaderStyle;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 public class Style {
     private static final String HEADER = "header";
-
-    private final XSSFWorkbook workbook;
-
-    private Style(XSSFWorkbook workbook) {
-        this.workbook = workbook;
-    }
-
-    public static Style of(XSSFWorkbook workbook) {
-        return new Style(workbook);
-    }
 
     public CellStyle createHeaderStyle(CellStyle cellStyle, Field field) {
         for (Annotation annotation : field.getAnnotations()) {

@@ -1,4 +1,4 @@
-package com.example.excelmaker.excelservice;
+package com.example.excelmaker.excelform.properties;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

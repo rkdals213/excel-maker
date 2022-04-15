@@ -1,11 +1,11 @@
-package com.example.excelmaker.excelservice;
+package com.example.excelmaker.excelservice.style;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class BodyColumnStyles implements ColumnStyles{
+public class HeaderColumnStyles implements ColumnStyles{
     private final Map<String, CellStyle> styleMap = new HashMap<>();
 
     public void addStyle(String key, CellStyle cellStyle) {

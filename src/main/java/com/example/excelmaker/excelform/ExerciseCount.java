@@ -1,8 +1,8 @@
 package com.example.excelmaker.excelform;
 
-import com.example.excelmaker.excelservice.BodyStyle;
-import com.example.excelmaker.excelservice.HeaderColumnName;
-import com.example.excelmaker.excelservice.HeaderStyle;
+import com.example.excelmaker.excelform.properties.BodyStyle;
+import com.example.excelmaker.excelform.properties.HeaderColumnName;
+import com.example.excelmaker.excelform.properties.HeaderStyle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
