@@ -16,6 +16,8 @@ public class Excel<T> {
     private final List<T> datas;
     private final Field[] fields;
     private final String sheetName;
+    private final ColumnStyles headerColumnStyles = new HeaderColumnStyles();
+    private final ColumnStyles bodyColumnStyles = new BodyColumnStyles();
 
     private Excel(XSSFWorkbook workbook, Field[] fields, List<T> datas, String sheetName) {
         this.workbook = workbook;
@@ -53,40 +55,53 @@ public class Excel<T> {
     public void generateSheet() {
         Sheet sheet = workbook.createSheet(sheetName);
 
+        initHeaderStyle();
+        initBodyStyle();
         renderHeader(sheet);
         renderBody(sheet);
         adjustColumnSize(sheet);
     }
 
-    private void renderHeader(Sheet sheet) {
-        CellStyle headerStyle = workbook.createCellStyle();
-        renderHeaderRow(sheet.createRow(0), headerStyle);
+    private void initHeaderStyle() {
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            CellStyle headerStyle = Style.of(workbook).createHeaderStyle(workbook.createCellStyle(), field);
+            headerColumnStyles.addStyle(fieldName, headerStyle);
+        }
     }
 
-    private void renderHeaderRow(Row row, CellStyle headerStyle) {
+    private void initBodyStyle() {
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            CellStyle bodyStyle = Style.of(workbook).createBodyStyle(workbook.createCellStyle(), field);
+            bodyColumnStyles.addStyle(fieldName, bodyStyle);
+        }
+    }
+
+    private void renderHeader(Sheet sheet) {
+        renderHeaderRow(sheet.createRow(0));
+    }
+
+    private void renderHeaderRow(Row row) {
         for (int i = 0; i < fields.length; i++) {
-            Style style = Style.of(workbook);
-            headerStyle = style.createHeaderStyle(headerStyle, fields[i]);
-            renderCell(fields[i].getName(), headerStyle, row.createCell(i));
+            String fieldName = fields[i].getName();
+            renderCell(fieldName, headerColumnStyles.getStyle(fieldName), row.createCell(i));
         }
     }
 
     private void renderBody(Sheet sheet) {
-        CellStyle dataStyle = workbook.createCellStyle();
-
         for (int i = 0; i < datas.size(); i++) {
-            renderBodyRow(sheet.createRow(i + 1), datas.get(i), dataStyle);
+            renderBodyRow(sheet.createRow(i + 1), datas.get(i));
         }
     }
 
-    private void renderBodyRow(Row row, T data, CellStyle dataStyle) {
+    private void renderBodyRow(Row row, T data) {
         for (int i = 0; i < fields.length; i++) {
-            Field declaredField = fields[i];
-            dataStyle = Style.of(workbook).createBodyStyle(dataStyle, declaredField);
-            declaredField.setAccessible(true);
+            Field field = fields[i];
+            field.setAccessible(true);
 
-            Object value = getValue(data, declaredField);
-            renderCell(value.toString(), dataStyle, row.createCell(i));
+            Object value = getValue(data, field);
+            renderCell(value.toString(), bodyColumnStyles.getStyle(field.getName()), row.createCell(i));
         }
     }
 
