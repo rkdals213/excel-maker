@@ -82,10 +82,7 @@ public class ExcelSheet<T> {
     }
 
     private void renderHeader(Sheet sheet) {
-        renderHeaderRow(sheet.createRow(0));
-    }
-
-    private void renderHeaderRow(Row row) {
+        Row row = sheet.createRow(0);
         for (int i = 0; i < fields.length; i++) {
             HeaderColumnName headerColumnName = fields[i].getDeclaredAnnotation(HeaderColumnName.class);
             String fieldName = fields[i].getName();
