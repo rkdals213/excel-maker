@@ -2,16 +2,14 @@ package com.example.excelmaker.dataservice;
 
 import com.example.excelmaker.excelform.DeveloperInfo;
 import com.example.excelmaker.excelform.ExerciseCount;
-import com.example.excelmaker.excelservice.ExcelSheet;
 import com.example.excelmaker.excelform.StayCount;
+import com.example.excelmaker.domain.DefaultExcel;
+import com.example.excelmaker.domain.Excel;
 import lombok.AllArgsConstructor;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -21,33 +19,27 @@ public class DataService {
 
     private DataMapper dataMapper;
 
-    public void createExcel() throws Exception {
+    public void createExcel() {
         List<StayCount> stayCounts = dataMapper.selectStayCount();
         List<ExerciseCount> exerciseCounts = dataMapper.selectExerciseCount();
         List<DeveloperInfo> developerInfos = dataMapper.selectDeveloperInfo();
 
-        XSSFWorkbook workbook = new XSSFWorkbook();
-
-        ExcelSheet.of(workbook, stayCounts, "stayCounts")
-                .generate();
-
-        ExcelSheet.of(workbook, exerciseCounts, "exerciseCounts")
-                .generate();
-
-        ExcelSheet.of(workbook, developerInfos, "developerInfos")
-                .generate();
-
-        String fileName = PATH + "countData" + EXTENSION;
-
-        saveFile(workbook, fileName);
+        Excel excel = new DefaultExcel("test", stayCounts, exerciseCounts, developerInfos);
+        excel.writeExcel();
     }
 
-    private void saveFile(XSSFWorkbook excel, String fileName) throws IOException {
-        File file = new File(fileName);
-        FileOutputStream fos = new FileOutputStream(file);
-        excel.write(fos);
+    public void readExcel() throws Exception{
+        Excel excel = new DefaultExcel("test");
+        List<List<Map<String, String>>> sheets = excel.readExcel();
 
-        excel.close();
-        fos.close();
+        for (List<Map<String, String>> sheet : sheets) {
+            for (Map<String, String> dataLine : sheet) {
+                System.out.println(dataLine);
+            }
+            System.out.println();
+            System.out.println("---------------------------------------------------------");
+            System.out.println();
+        }
     }
+
 }

@@ -6,13 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ExcelSheetMakerApplicationTests {
+class ExcelWriterMakerApplicationTests {
 
     @Autowired
     DataService dataService;
 
     @Test
-    void contextLoads() throws Exception {
+    void write() throws Exception {
         dataService.createExcel();
+    }
+
+    @Test
+    void read() throws Exception {
+        dataService.readExcel();
     }
 }

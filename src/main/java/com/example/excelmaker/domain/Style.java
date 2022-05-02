@@ -1,4 +1,4 @@
-package com.example.excelmaker.excelservice;
+package com.example.excelmaker.domain;
 
 import com.example.excelmaker.excelform.properties.BodyStyle;
 import com.example.excelmaker.excelform.properties.HeaderStyle;

@@ -1,4 +1,4 @@
-package com.example.excelmaker.excelservice.style;
+package com.example.excelmaker.domain.style;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 

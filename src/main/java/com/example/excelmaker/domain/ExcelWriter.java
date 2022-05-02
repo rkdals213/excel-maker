@@ -1,9 +1,9 @@
-package com.example.excelmaker.excelservice;
+package com.example.excelmaker.domain;
 
-import com.example.excelmaker.excelservice.style.BodyColumnStyles;
-import com.example.excelmaker.excelservice.style.ColumnStyles;
 import com.example.excelmaker.excelform.properties.HeaderColumnName;
-import com.example.excelmaker.excelservice.style.HeaderColumnStyles;
+import com.example.excelmaker.domain.style.BodyColumnStyles;
+import com.example.excelmaker.domain.style.ColumnStyles;
+import com.example.excelmaker.domain.style.HeaderColumnStyles;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -13,7 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class ExcelSheet<T> {
+public class ExcelWriter<T> {
 
     private static final String EXCEL_CLASS_PATH = "com.example.excelmaker.excelform.";
     private static final String HEADER = "header";
@@ -22,19 +22,17 @@ public class ExcelSheet<T> {
     private final XSSFWorkbook workbook;
     private final List<T> datas;
     private final Field[] fields;
-    private final String sheetName;
     private final ColumnStyles headerColumnStyles = new HeaderColumnStyles();
     private final ColumnStyles bodyColumnStyles = new BodyColumnStyles();
 
-    private ExcelSheet(XSSFWorkbook workbook, Field[] fields, List<T> datas, String sheetName) {
+    private ExcelWriter(XSSFWorkbook workbook, Field[] fields, List<T> datas) {
         this.workbook = workbook;
         this.datas = datas;
         this.fields = fields;
-        this.sheetName = sheetName;
     }
 
-    public static <T> ExcelSheet<T> of(XSSFWorkbook workbook, List<T> datas, String sheetName) {
-        return new ExcelSheet<>(workbook, initDeclaredField(datas), datas, sheetName);
+    public static <T> ExcelWriter<T> of(XSSFWorkbook workbook, List<T> datas) {
+        return new ExcelWriter<>(workbook, initDeclaredField(datas), datas);
     }
 
     private static <T> Field[] initDeclaredField(List<T> datas) {
@@ -59,8 +57,8 @@ public class ExcelSheet<T> {
         }
     }
 
-    public void generate() {
-        Sheet sheet = workbook.createSheet(sheetName);
+    public void write() {
+        Sheet sheet = workbook.createSheet();
 
         initStyle();
         renderHeader(sheet);
