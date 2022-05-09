@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ExcelReader {
-    private final List<List<Map<String, String>>> sheets = new ArrayList<>();
+    private final List<Sheet> sheets = new ArrayList<>();
 
     private final String path;
     private int rowCount;
@@ -27,19 +27,19 @@ public class ExcelReader {
         return new ExcelReader(path);
     }
 
-    public List<List<Map<String, String>>> extract() {
+    public List<Sheet> read() {
         XSSFWorkbook workbook = createWorkBook();
         int sheetSize = workbook.getNumberOfSheets();
         for (int i = 0; i < sheetSize; i++) {
-            XSSFSheet sheet = getSheet(workbook, i);
+            XSSFSheet xssfSheet = getSheet(workbook, i);
 
             List<String> keys = new ArrayList<>();
-            List<Map<String, String>> sheetData = new ArrayList<>();
+            Sheet sheet = new Sheet();
 
-            extractHeader(sheet, keys);
-            extractBody(sheet, keys, sheetData);
+            extractHeader(xssfSheet, keys);
+            extractBody(xssfSheet, keys, sheet);
 
-            sheets.add(sheetData);
+            sheets.add(sheet);
         }
 
         return sheets;
@@ -83,24 +83,24 @@ public class ExcelReader {
         }
     }
 
-    private void extractBody(XSSFSheet sheet, List<String> keys, List<Map<String, String>> sheetData) {
+    private void extractBody(XSSFSheet sheet, List<String> keys, Sheet sheetData) {
         for (int i = 1; i < rowCount; i++) {
-            Map<String, String> rowData = new HashMap<>();
-            XSSFRow row = sheet.getRow(i);
+            Row row = new Row();
+            XSSFRow xssfRow = sheet.getRow(i);
 
-            if (row == null) {
+            if (xssfRow == null) {
                 continue;
             }
 
-            mapRowData(keys, rowData, row);
+            mapRowData(keys, row, xssfRow);
 
-            sheetData.add(rowData);
+            sheetData.add(row);
         }
     }
 
-    private void mapRowData(List<String> keys, Map<String, String> rowData, XSSFRow row) {
+    private void mapRowData(List<String> keys, Row row, XSSFRow xssfRow) {
         for (int j = 0; j < columnCount; j++) {
-            XSSFCell cell = row.getCell(j);
+            XSSFCell cell = xssfRow.getCell(j);
 
             if (cell == null) {
                 continue;
@@ -109,7 +109,7 @@ public class ExcelReader {
             String key = keys.get(j);
             String value = cell.getStringCellValue();
 
-            rowData.put(key, value);
+            row.add(key, value);
         }
     }
 }

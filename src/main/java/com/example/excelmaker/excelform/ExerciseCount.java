@@ -3,6 +3,7 @@ package com.example.excelmaker.excelform;
 import com.example.excelmaker.excelform.properties.BodyStyle;
 import com.example.excelmaker.excelform.properties.HeaderColumnName;
 import com.example.excelmaker.excelform.properties.HeaderStyle;
+import com.example.excelmaker.excelform.properties.SheetName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 @Setter
 @AllArgsConstructor
 @ToString
+@SheetName(sheetName = "exercise count")
 public class ExerciseCount {
     @HeaderStyle(boarderStyle = BorderStyle.NONE)
     @BodyStyle(boarderStyle = BorderStyle.THICK, indexedColors = IndexedColors.AQUA)

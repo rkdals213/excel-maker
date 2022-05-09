@@ -1,15 +1,16 @@
 package com.example.excelmaker.dataservice;
 
+import com.example.excelmaker.domain.DefaultExcel;
+import com.example.excelmaker.domain.Excel;
+import com.example.excelmaker.domain.Row;
+import com.example.excelmaker.domain.Sheet;
 import com.example.excelmaker.excelform.DeveloperInfo;
 import com.example.excelmaker.excelform.ExerciseCount;
 import com.example.excelmaker.excelform.StayCount;
-import com.example.excelmaker.domain.DefaultExcel;
-import com.example.excelmaker.domain.Excel;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -30,11 +31,11 @@ public class DataService {
 
     public void readExcel() throws Exception{
         Excel excel = new DefaultExcel("test");
-        List<List<Map<String, String>>> sheets = excel.readExcel();
+        List<Sheet> sheets = excel.readExcel();
 
-        for (List<Map<String, String>> sheet : sheets) {
-            for (Map<String, String> dataLine : sheet) {
-                System.out.println(dataLine);
+        for (Sheet sheet : sheets) {
+            for (Row dataLine : sheet.getRows()) {
+                dataLine.getCells().forEach((key, value) -> System.out.println(key + " : " + value));
             }
             System.out.println();
             System.out.println("---------------------------------------------------------");

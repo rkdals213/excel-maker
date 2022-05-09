@@ -1,5 +1,6 @@
 package com.example.excelmaker.domain;
 
+import com.example.excelmaker.excelform.properties.SheetName;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -7,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DefaultExcel<T> implements Excel {
@@ -34,16 +34,24 @@ public class DefaultExcel<T> implements Excel {
 
         for (List<T> data : datas) {
             ExcelWriter<T> excelWriter = ExcelWriter.of(workbook, data);
-            excelWriter.write();
+
+            SheetName sheetName = data.stream().findFirst()
+                    .orElseThrow(() -> {
+                        throw new RuntimeException("데이터가 없습니다");
+                    })
+                    .getClass()
+                    .getDeclaredAnnotation(SheetName.class);
+
+            excelWriter.write(sheetName.sheetName());
         }
 
         saveFile();
     }
 
     @Override
-    public List<List<Map<String, String>>> readExcel() {
+    public List<Sheet> readExcel() {
         ExcelReader excelReader = ExcelReader.of(PATH + fileName + EXTENSION);
-        return excelReader.extract();
+        return excelReader.read();
     }
 
     private void saveFile() {

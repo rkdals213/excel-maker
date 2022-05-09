@@ -56,8 +56,8 @@ public class ExcelWriter<T> {
         }
     }
 
-    public void write() {
-        Sheet sheet = workbook.createSheet();
+    public void write(String sheetName) {
+        Sheet sheet = workbook.createSheet(sheetName);
 
         initStyle();
         renderHeader(sheet);
