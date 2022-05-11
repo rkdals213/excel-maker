@@ -4,17 +4,11 @@ import com.example.excelmaker.excelform.properties.BodyStyle;
 import com.example.excelmaker.excelform.properties.HeaderColumnName;
 import com.example.excelmaker.excelform.properties.HeaderStyle;
 import com.example.excelmaker.excelform.properties.SheetName;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@ToString
+@Data
 @SheetName(sheetName = "developer info")
 public class DeveloperInfo {
     @HeaderStyle(boarderStyle = BorderStyle.NONE)
